@@ -3,17 +3,19 @@ def filter_by_currency(transactions: list, code: str):
     try:
         filter_transactions = filter(lambda item: item["operationAmount"]["currency"]["code"] == code, transactions)
         return filter_transactions
+
     except Exception:
-        return None
+        return
 
 
 def transaction_descriptions(transactions: list) -> str:
     """функция возвращает описание каждой операции по очереди"""
     try:
-        description = (transaction.get("description") for transaction in transactions)
-        return description
+        description_ = (transaction.get("description") for transaction in transactions)
+        return description_
+
     except Exception:
-        return None
+        return
 
 
 def card_number_generator(start: int, end: int):
