@@ -1,0 +1,11 @@
+
+my_function ok
+my_function ok
+my_function ok
+my_function ok
+my_function error: TypeError. Inputs: (3, '5'), {}
+my_function ok
+my_function ok
+my_function ok
+my_function ok
+my_function error: TypeError. Inputs: (3, '5'), {}
