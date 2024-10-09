@@ -22,9 +22,9 @@ def filter(file_json):
                     usd_sum_in_rub = currency_conversion_rubles_usd(usd_sum)
                 if i["operationAmount"]["currency"]["code"] == "EUR":
                     eur_sum += float(i["operationAmount"]["amount"])
-                    eur_sum_in_rub = currency_conversion_rubles_eus(eur_sum)
+                    #eur_sum_in_rub = currency_conversion_rubles_eus(eur_sum)
 
-        return round(rub_sum, 2), round(usd_sum_in_rub, 2), round(eur_sum_in_rub, 2)
+        return round(rub_sum, 2), round(usd_sum_in_rub, 2), round(eur_sum, 2)
     except json.JSONDecodeError:
         file_ = "Invalid JSON data."
         return file_
