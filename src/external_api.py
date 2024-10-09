@@ -27,7 +27,7 @@ def currency_conversion_rubles_eus():
 
 
 
-headers ={'apikey' : api_key}
+headers ={'apikey' : K16LBUCLil1G7oZUvTdXYZFICf8b64V9}
 #params = {'to': 'RUB',  'from': 'USD', 'amount': sum_usd}
 to = 'RUB'
 from_ = 'USD'
