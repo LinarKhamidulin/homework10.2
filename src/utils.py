@@ -29,14 +29,14 @@ def amount_from_the_list(file_json) -> list:
         return amount_sum
 
     except json.JSONDecodeError:
-        file_ = "Invalid JSON data."
-        return file_
+        file_error = "Invalid JSON data."
+        return file_error
     except KeyError:
-        file_ = "Key not found in JSON data."
-        return file_
+        file_error = "Key not found in JSON data."
+        return file_error
     except TypeError:
-        file_ = "Object of type set is not JSON serializable."
-        return file_
+        file_error = "Object of type set is not JSON serializable."
+        return file_error
 
 
 def exchange_rates_in_rubles(amount_sum: list) -> str:
