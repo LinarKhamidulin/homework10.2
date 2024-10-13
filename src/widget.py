@@ -13,6 +13,8 @@ def mask_account_card(card_data_numbers: str) -> str:
     elif len(card_number) == 20:
         mack_account_number = get_mask_account(card_number)
         mask_card_number_name = name_card + mack_account_number
+    else:
+        mask_card_number_name = ""
 
     return mask_card_number_name
 

@@ -9,9 +9,9 @@ def filter_by_state(list_dictionary: list, state="EXECUTED") -> list:
     return dictionary_new_filter
 
 
-def sort_by_date(list_dictionary: list) -> list:
+def sort_by_date(list_dictionary: list, reverse=True) -> list:
     """Функция возвращать новый список, отсортированный по дате"""
 
-    dictionary_new_sort = sorted(list_dictionary, key=lambda x: x["date"], reverse=True)
+    dictionary_new_sort = sorted(list_dictionary, key=lambda x: x["date"], reverse=reverse)
 
     return dictionary_new_sort
