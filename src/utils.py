@@ -7,7 +7,7 @@ file_handler = logging.FileHandler('utils.log')
 file_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def amount_from_the_list(file_json) -> list:
@@ -17,11 +17,11 @@ def amount_from_the_list(file_json) -> list:
     usd_sum = 0
     eur_sum = 0
     try:
-        logger.info(f'Working with a file {file_json}')
+        logger.debug(f'Working with a file {file_json}')
         with open(file_json, encoding="utf-8") as f:
             data_file = json.load(f)
 
-        logger.info(f'working with variables from a file {file_json}')
+        logger.debug(f'working with variables from a file {file_json}')
         for i in data_file:
             if i != {}:
                 if i["operationAmount"]["currency"]["code"] == "RUB":
@@ -38,14 +38,20 @@ def amount_from_the_list(file_json) -> list:
         return amount_sum
 
     except json.JSONDecodeError:
+        logger.setLevel(logging.ERROR)
+        logger.error("Invalid JSON data.")
         file_error = "Invalid JSON data."
 
         return file_error
     except KeyError:
+        logger.setLevel(logging.ERROR)
+        logger.error("Key not found in JSON data.")
         file_error = "Key not found in JSON data."
 
         return file_error
     except TypeError:
+        logger.setLevel(logging.ERROR)
+        logger.error("Object of type set is not JSON serializable.")
         file_error = "Object of type set is not JSON serializable."
 
         return file_error
