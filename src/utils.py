@@ -1,6 +1,13 @@
 import json
-from logging import exception
+import logging
 from src.external_api import currency_conversion_rubles_usd, currency_conversion_rubles_eus
+
+logger = logging.getLogger('utils')
+file_handler = logging.FileHandler('utils.log')
+file_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.INFO)
 
 
 def amount_from_the_list(file_json) -> list:
@@ -10,9 +17,11 @@ def amount_from_the_list(file_json) -> list:
     usd_sum = 0
     eur_sum = 0
     try:
+        logger.info(f'Working with a file {file_json}')
         with open(file_json, encoding="utf-8") as f:
             data_file = json.load(f)
 
+        logger.info(f'working with variables from a file {file_json}')
         for i in data_file:
             if i != {}:
                 if i["operationAmount"]["currency"]["code"] == "RUB":
@@ -30,17 +39,22 @@ def amount_from_the_list(file_json) -> list:
 
     except json.JSONDecodeError:
         file_error = "Invalid JSON data."
+
         return file_error
     except KeyError:
         file_error = "Key not found in JSON data."
+
         return file_error
     except TypeError:
         file_error = "Object of type set is not JSON serializable."
+
         return file_error
 
 
 def exchange_rates_in_rubles(amount_sum: list) -> str:
     """Функция конвертации значениий из иностроной валюты в рубли"""
+
+    logger.info(f'working with variables from functions "amount_from_the_list" ')
     if amount_sum[1] >= 0:
         usd = amount_sum[1]
         usd_sum_in_rub = currency_conversion_rubles_usd(usd)
@@ -56,5 +70,4 @@ def exchange_rates_in_rubles(amount_sum: list) -> str:
 
 
 amount_sum = amount_from_the_list("../data/operations.json")
-
 print(exchange_rates_in_rubles(amount_sum))
