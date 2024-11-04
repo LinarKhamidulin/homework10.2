@@ -1,6 +1,8 @@
 import json
 import logging
 from src.external_api import currency_conversion_rubles_usd, currency_conversion_rubles_eus
+from collections import Counter
+
 
 logger = logging.getLogger('utils')
 file_handler = logging.FileHandler('utils.log')
@@ -10,6 +12,7 @@ logger.addHandler(file_handler)
 logger.setLevel(logging.DEBUG)
 
 
+
 def amount_from_the_list(file_json) -> list:
     """функция вывода данных из json файла и суммирует их по валюте"""
     amount_sum = []
@@ -17,11 +20,11 @@ def amount_from_the_list(file_json) -> list:
     usd_sum = 0
     eur_sum = 0
     try:
-        logger.debug(f'Working with a file {file_json}')
+        logger.debug(f"Working with a file {file_json}")
         with open(file_json, encoding="utf-8") as f:
             data_file = json.load(f)
 
-        logger.debug(f'working with variables from a file {file_json}')
+        logger.debug(f"working with variables from a file {file_json}")
         for i in data_file:
             if i != {}:
                 if i["operationAmount"]["currency"]["code"] == "RUB":
@@ -38,19 +41,19 @@ def amount_from_the_list(file_json) -> list:
         return amount_sum
 
     except json.JSONDecodeError:
-        logger.setLevel(logging.ERROR)
+
         logger.error("Invalid JSON data.")
         file_error = "Invalid JSON data."
 
         return file_error
     except KeyError:
-        logger.setLevel(logging.ERROR)
+
         logger.error("Key not found in JSON data.")
         file_error = "Key not found in JSON data."
 
         return file_error
     except TypeError:
-        logger.setLevel(logging.ERROR)
+
         logger.error("Object of type set is not JSON serializable.")
         file_error = "Object of type set is not JSON serializable."
 
@@ -75,5 +78,67 @@ def exchange_rates_in_rubles(amount_sum: list) -> str:
     return result
 
 
+def open_file_json(parameters: list)-> list:
+    '''функция для открытия и обратки json файла'''
+    datas_ = []
+    logger.debug(f"working with variables from a file data/operations.json")
+    try:
+        file_json = "data/operations.json"
+        with open(file_json, encoding="utf-8") as f:
+            data_file = json.load(f)
+            for data_ in data_file:
+                if data_ != {}:
+                    if parameters["currency"].lower() == "да":
+                        if data_["state"] == parameters["status"].upper() and data_["operationAmount"]["currency"]["code"] == "RUB":
+                            datas_.append(data_)
+                    elif parameters["currency"].lower() == "нет":
+                        if data_["state"] == parameters["status"].upper():
+                            datas_.append(data_)
+            if parameters["data"] == "да" and parameters["ascending_or_descending"] == "по возрастанию":
+                datas_.sort(key=lambda i: i["date"])
+            elif parameters["data"] == "нет" and parameters["ascending_or_descending"] == "по возрастанию":
+                datas_.sort(key=lambda i: i['id'])
+            elif parameters["data"] == "да" and parameters["ascending_or_descending"] == "по убыванию":
+                datas_.sort(key=lambda i: i["date"], reverse = True)
+            elif parameters["data"] == "нет" and parameters["ascending_or_descending"] == "по убыванию":
+                datas_.sort(key=lambda i: i['id'], reverse = True)
+
+        return datas_
+
+    except FileNotFoundError:
+
+        logger.error("File Not Found Error")
+        file_error = "File Not Found Error"
+
+        return file_error
+
+    except KeyError:
+
+        logger.error("Key not found in JSON data.")
+        file_error = "Key not found in JSON data."
+
+        return file_error
+
+    except TypeError:
+
+        logger.error("Object of type set is not JSON serializable.")
+        file_error = "Object of type set is not JSON serializable."
+
+        return file_error
+
+'''
+parameters_from_the_user = {
+    "process": 1,
+    "status": "EXECUTED",
+    "data": "да",
+    "ascending_or_descending": "по убыванию",
+    "currency": "да"
+}
+print(open_file_json(parameters_from_the_user))
+'''
+
+'''
 amount_sum = amount_from_the_list("../data/operations.json")
+print(amount_sum)
 print(exchange_rates_in_rubles(amount_sum))
+'''

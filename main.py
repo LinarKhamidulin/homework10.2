@@ -1,8 +1,12 @@
+import re
+from isort.identify import imports
 from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
+from src.utils import open_file_json
+from src.handler_CSV_Excel import reading_a_file_csv, read_excel_file
 
-
+"""
 card_number = input("Наименование и номер карты: ")
 account_number = input("Номер счета: ")
 date_input = input("Дата: ")
@@ -88,5 +92,153 @@ for _ in range(5):
 print("функция card_number_generator")
 for card_number in card_number_generator(1, 5):
     print(card_number)
+"""
 
 
+def main() -> dict:
+
+    print(
+        """lower()
+    Программа: Привет! Добро пожаловать в программу работы
+    с банковскими транзакциями. 
+    Выберите необходимый пункт меню:
+    1. Получить информацию о транзакциях из JSON-файла
+    2. Получить информацию о транзакциях из CSV-файла
+    3. Получить информацию о транзакциях из XLSX-файла
+    """
+    )
+    name_user = input("Имя ")
+
+    file_to_process = input(f"{name_user}, выберите файл для обработки ")
+    filter_by_status = input("отфильтровать по статусу ")
+    filter_by_data = input("Отсортировать операции по дате? Да/Нет ")
+    sort_in_ascending_or_descending_order = input("Отсортировать по возрастанию или по убыванию? ")
+    filter_by_currency_ = input("Выводить только рублевые транзакции? Да/Нет ")
+    print(f"Распечатываю итоговый список транзакций для {name_user}")
+
+    parameters_from_the_user = {
+        "process": file_to_process,
+        "status": filter_by_status,
+        "data": filter_by_data,
+        "ascending_or_descending": sort_in_ascending_or_descending_order,
+        "currency": filter_by_currency_,
+    }
+    return parameters_from_the_user
+
+
+def parameter_handler(parameters):
+    try:
+
+        if parameters["process"] == "1":
+            file_open = open_file_json(parameters)
+            counted = 0
+            for i in file_open:
+                if i != {}:
+                    counted += 1
+            print(f"Всего банковских операций в выборке: {counted}")
+
+            for i in file_open:
+                date_of_the_operation = get_date(i["date"])
+                operation = i["description"]
+                if "from" in i.keys():
+                    recipient_ = mask_account_card(i["to"])
+                    sender = mask_account_card(i["from"])
+                else:
+                    recipient_ = mask_account_card(i["to"])
+
+                amount = i["operationAmount"]["amount"]
+                name_currency = i["operationAmount"]["currency"]["name"]
+
+                print(f"{date_of_the_operation}: {operation}.")
+                if sender != "":
+                    print(f"{recipient_} -> {sender}.")
+                else:
+                    print(recipient_)
+                print(f"сумма: {amount} {name_currency}\n")
+
+        elif parameters["process"] == "2":
+            file_open = reading_a_file_csv(parameters)
+            counted = 0
+            for i in file_open:
+                if i != {}:
+                    counted += 1
+
+            print(f"Всего банковских операций в выборке: {counted}")
+            for i in file_open:
+                date_of_the_operation = get_date(i["date"])
+                operation = i["description"]
+                if "from" in i.keys():
+                    recipient_ = mask_account_card(i["to"])
+                    sender = mask_account_card(i["from"])
+                else:
+                    recipient_ = mask_account_card(i["to"])
+                amount = i["amount"]
+                name_currency = i["currency_name"]
+
+                print(f"{date_of_the_operation}: {operation}.")
+                if sender != "":
+                    print(f"{recipient_} -> {sender}.")
+                else:
+                    print(recipient_)
+                print(f"сумма: {amount} {name_currency}\n")
+
+        elif parameters["process"] == "3":
+            file_open = read_excel_file(parameters)
+            counted = 0
+            for i in file_open:
+                if i != {}:
+                    counted += 1
+
+            print(f"Всего банковских операций в выборке: {counted}")
+            for i in file_open:
+                date_of_the_operation = get_date(i["date"])
+                operation = i["description"]
+                print(f"{date_of_the_operation}: {operation}.")
+
+                if i["description"] != "Открытие вклада":
+                    recipient_ = mask_account_card(i["to"])
+                    sender = mask_account_card(i["from"])
+                    print(f"{recipient_} -> {sender}.")
+                else:
+                    recipient_ = mask_account_card(i["to"])
+                    print(recipient_)
+                amount = i["amount"]
+                name_currency = i["currency_name"]
+                print(f"сумма: {amount} {name_currency}\n")
+
+    except TypeError:
+        return f"Указаны не верные параметры для сортировки {parameters}"
+
+    except Exception:
+        return f"Указаны не верные параметры для сортировки {parameters}"
+
+
+def filter_parameters_from_the_user(parameters):
+    try:
+        file_to_process_ = re.findall(r"1|2|3", parameters.get("process"), flags=re.IGNORECASE)
+        filter_by_status_ = re.findall(r"EXECUTED|CANCELED|PENDING", parameters.get("status"), flags=re.IGNORECASE)
+        filter_by_data_ = re.findall(r"да|нет", parameters.get("data"), flags=re.IGNORECASE)
+        sort_in_ascending_or_descending_order_ = re.findall(
+            r"по возрастанию|по убыванию", parameters.get("ascending_or_descending"), flags=re.IGNORECASE
+        )
+        filter_by_currency_ = re.findall(r"да|нет", parameters.get("currency"), flags=re.IGNORECASE)
+
+        parameters_from_the_user = {
+            "process": file_to_process_[0],
+            "status": filter_by_status_[0],
+            "data": filter_by_data_[0],
+            "ascending_or_descending": sort_in_ascending_or_descending_order_[0],
+            "currency": filter_by_currency_[0],
+        }
+
+        return parameters_from_the_user
+
+    except Exception:
+        return f"Указаны не верные параметры для сортировки {parameters}"
+
+
+request_parameters = main()
+print(filter_parameters_from_the_user(request_parameters))
+parameters_from_the_user = filter_parameters_from_the_user(request_parameters)
+user_parameters = parameter_handler(parameters_from_the_user)
+print(user_parameters)

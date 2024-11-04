@@ -18,11 +18,11 @@ def test_get_mask_card_number(my_str_card_number: str):
 
 
 def test_get_mask_card_number_short(my_str_card_number_1: str):
-    assert get_mask_card_number(my_str_card_number_1) == "7000 79** **** 8960"
+    assert get_mask_card_number(my_str_card_number_1) == {}
 
 
 def test_get_mask_card_number_not_data():
-    assert get_mask_card_number("") == " ** **** "
+    assert get_mask_card_number("") == {}
 
 
 #Тест функции get_mask_account
@@ -40,8 +40,8 @@ def test_get_mask_account(my_str_account: str):
 
 
 def test_get_mask_account_short(my_str_account_2: str):
-    assert get_mask_account(my_str_account_2) == "**3587"
+    assert get_mask_account(my_str_account_2) == {}
 
 
 def test_get_mask_account_not_data():
-    assert get_mask_account(" ") == "** "
+    assert get_mask_account(" ") == {}

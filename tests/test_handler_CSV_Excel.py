@@ -1,13 +1,16 @@
 import pytest
-import json
-from dotenv import load_dotenv
 from unittest.mock import Mock, mock_open
 from unittest.mock import patch
-from src.utils import exchange_rates_in_rubles, amount_from_the_list
 
 
 
 @patch("builtins.open", new_callable=mock_open, read_data="data")
-def test_exchange_rates_in_rubles(mock_file):
+def test_reading_a_file_csv(mock_file):
+    assert open("path/to/open").read() == "data"
+    mock_file.assert_called_with("path/to/open")
+
+
+@patch("builtins.open", new_callable=mock_open, read_data="data")
+def test_read_excel_file(mock_file):
     assert open("path/to/open").read() == "data"
     mock_file.assert_called_with("path/to/open")

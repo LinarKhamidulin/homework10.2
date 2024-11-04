@@ -1,4 +1,12 @@
 from src.masks import get_mask_card_number, get_mask_account
+import logging
+
+logger = logging.getLogger('mask')
+file_handler = logging.FileHandler('logs/masks.log')
+file_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.DEBUG)
 
 
 def mask_account_card(card_data_numbers: str) -> str:
@@ -14,6 +22,7 @@ def mask_account_card(card_data_numbers: str) -> str:
         mack_account_number = get_mask_account(card_number)
         mask_card_number_name = name_card + mack_account_number
     else:
+        logger.error("номер не соотвествует стандартному набору")
         mask_card_number_name = ""
 
     return mask_card_number_name
