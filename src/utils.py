@@ -125,20 +125,3 @@ def open_file_json(parameters: list)-> list:
         file_error = "Object of type set is not JSON serializable."
 
         return file_error
-
-'''
-parameters_from_the_user = {
-    "process": 1,
-    "status": "EXECUTED",
-    "data": "да",
-    "ascending_or_descending": "по убыванию",
-    "currency": "да"
-}
-print(open_file_json(parameters_from_the_user))
-'''
-
-'''
-amount_sum = amount_from_the_list("../data/operations.json")
-print(amount_sum)
-print(exchange_rates_in_rubles(amount_sum))
-'''

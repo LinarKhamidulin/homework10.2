@@ -48,16 +48,3 @@ def read_excel_file(parameters: list)-> list:
         dict_list.sort(key=lambda i: i['id'], reverse=True)
 
     return dict_list
-
-
-'''
-parameters_from_the_user = {
-    "process": 1,
-    "status": "EXECUTED",
-    "data": "да",
-    "ascending_or_descending": "по возрастанию",
-    "currency": "да"
-}
-
-print(read_excel_file(parameters_from_the_user))
-'''

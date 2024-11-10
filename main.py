@@ -1,6 +1,9 @@
 import re
+from collections import Counter
+
 from isort.identify import imports
 from src.processing import filter_by_state, sort_by_date
+from src.utils_re import filter_parameters_from_the_user
 from src.widget import get_date, mask_account_card
 from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
 from src.utils import open_file_json
@@ -110,7 +113,8 @@ def main() -> dict:
     name_user = input("Имя ")
 
     file_to_process = input(f"{name_user}, выберите файл для обработки ")
-    filter_by_status = input("отфильтровать по статусу ")
+    print("Введите статус, по которому необходимо выполнить фильтрацию.")
+    filter_by_status = input("Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n")
     filter_by_data = input("Отсортировать операции по дате? Да/Нет ")
     sort_in_ascending_or_descending_order = input("Отсортировать по возрастанию или по убыванию? ")
     filter_by_currency_ = input("Выводить только рублевые транзакции? Да/Нет ")
@@ -126,15 +130,18 @@ def main() -> dict:
     return parameters_from_the_user
 
 
-def parameter_handler(parameters):
+def parameter_handler(parameters: dict)-> str:
+    '''Функция обработки данных из файлов JSON, CSV, XLSX'''
     try:
 
         if parameters["process"] == "1":
+            #обработки данных из файлов JSON
             file_open = open_file_json(parameters)
             counted = 0
             for i in file_open:
                 if i != {}:
                     counted += 1
+
             print(f"Всего банковских операций в выборке: {counted}")
 
             for i in file_open:
@@ -157,6 +164,7 @@ def parameter_handler(parameters):
                 print(f"сумма: {amount} {name_currency}\n")
 
         elif parameters["process"] == "2":
+            #обработки данных из файлов CSV
             file_open = reading_a_file_csv(parameters)
             counted = 0
             for i in file_open:
@@ -183,6 +191,7 @@ def parameter_handler(parameters):
                 print(f"сумма: {amount} {name_currency}\n")
 
         elif parameters["process"] == "3":
+            #обработки данных из файлов XLSX
             file_open = read_excel_file(parameters)
             counted = 0
             for i in file_open:
@@ -207,34 +216,10 @@ def parameter_handler(parameters):
                 print(f"сумма: {amount} {name_currency}\n")
 
     except TypeError:
-        return f"Указаны не верные параметры для сортировки {parameters}"
+        return f"ошибка TypeError"
 
     except Exception:
-        return f"Указаны не верные параметры для сортировки {parameters}"
-
-
-def filter_parameters_from_the_user(parameters):
-    try:
-        file_to_process_ = re.findall(r"1|2|3", parameters.get("process"), flags=re.IGNORECASE)
-        filter_by_status_ = re.findall(r"EXECUTED|CANCELED|PENDING", parameters.get("status"), flags=re.IGNORECASE)
-        filter_by_data_ = re.findall(r"да|нет", parameters.get("data"), flags=re.IGNORECASE)
-        sort_in_ascending_or_descending_order_ = re.findall(
-            r"по возрастанию|по убыванию", parameters.get("ascending_or_descending"), flags=re.IGNORECASE
-        )
-        filter_by_currency_ = re.findall(r"да|нет", parameters.get("currency"), flags=re.IGNORECASE)
-
-        parameters_from_the_user = {
-            "process": file_to_process_[0],
-            "status": filter_by_status_[0],
-            "data": filter_by_data_[0],
-            "ascending_or_descending": sort_in_ascending_or_descending_order_[0],
-            "currency": filter_by_currency_[0],
-        }
-
-        return parameters_from_the_user
-
-    except Exception:
-        return f"Указаны не верные параметры для сортировки {parameters}"
+        return f"ошибка"
 
 
 request_parameters = main()
