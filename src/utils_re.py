@@ -35,6 +35,7 @@ def counting_operations(list_data: list)-> dict:
     for dist in list_data:
         description = re.findall("\D+", dist['description'], flags=0)
         list_.append(*description)
-        counted = Counter(list_)
+
+    counted = Counter(list_)
 
     return counted
