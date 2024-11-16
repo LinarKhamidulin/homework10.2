@@ -1,12 +1,39 @@
+import logging
+
+logger = logging.getLogger('mask')
+file_handler = logging.FileHandler('logs/masks.log')
+file_formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.DEBUG)
+
+
 def get_mask_card_number(card_number: str) -> str:
     """функция создает маску карты, выводя номер карты разделя их пробелом, 6 символ меняются на *"""
 
-    return f"{card_number[:4]} {card_number[4:6]}** **** {card_number[-4:]}"
+    logger.info('performing a card number mask')
+    if len(card_number) == 16:
+        mask_card_number = f"{card_number[:4]} {card_number[4:6]}** **** {card_number[-4:]}"
+
+    else:
+        logger.error("ERROR")
+        mask_card_number = {}
+
+
+    return mask_card_number
 
 
 def get_mask_account(account_number: str) -> str:
     """функция создает маску карты показывая ** последние 4 символа"""
 
-    mask_card_number = f"**{account_number[-4:]}"
+    logger.info('The operation of the account mask')
+    if len(account_number) == 20:
+        mask_card_number = f"**{account_number[-4:]}"
+
+    else:
+        logger.error("ERROR")
+        mask_card_number = {}
 
     return mask_card_number
+
+
